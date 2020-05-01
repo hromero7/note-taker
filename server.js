@@ -2,7 +2,6 @@ const express = require("express");
 const path = require("path");
 const uuid = require("uuid/v4");
 const util = require("util");
-// const db = require("./db/db.json");
 const fs = require("fs");
 
 const app = express();
@@ -24,8 +23,9 @@ app.get("/notes", function(req, res) {
 app.get("/api/notes", function(req, res) {
     readFileAsync("./db/db.json", 'utf8', function(err, data) {
         if(err) throw err;
-        const newNote = JSON.parse(JSON.stringify(data));
-        console.log(newNote + "line 28");
+        const newNote = JSON.parse(data);
+        
+        // console.log(newNote + "line 28");
         res.json(newNote);
         
     })
@@ -50,23 +50,32 @@ app.post("/api/notes", function(req, res) {
             console.log(data + "Line 50");
            
             oldNotes = JSON.parse(data);
+            notesArr(oldNotes);
             console.log(oldNotes + "Line 53");
     })
-            console.log(storedData);
-            // const storedNotes = JSON.parse(data);
+    return oldNotes;
             
-        // const storedData = readFileAsync("./db/db.json", 'utf8', function(err, data) {
-        //     if(err) throw err;
-        //     // const storedNotes = JSON.parse(data);
-        //     console.log(data);
-        //     oldNotes = res.json(data);
-        //     console.log(oldNotes);
-        // })
-    // const notesArray = [...oldNotes, JSON.stringify(newNote)];
-        const notesArray = JSON.stringify({title: "Hello", text: "world"});
-    fs.writeFileSync("./db/db.json", [].concat(notesArray));
-})
+    function notesArr (oldNotes) {
+        const notesArray = [].concat(oldNotes, newNote);
+        fs.writeFileSync("./db/db.json", JSON.stringify(notesArray));
+        res.redirect("/notes");
+    }
 
+
+});
+
+app.delete("/api/notes/:id", function(req, res) {
+    // console.log(req.params.id);
+    fs.readFile("./db/db.json", function(err, data) {
+        const noteArr = JSON.parse(data);
+        const filteredArr = noteArr.filter(function (n) {
+            return n.id != req.params.id;
+        })
+        fs.writeFileSync("./db/db.json", JSON.stringify(filteredArr));
+        res.json({ ok: true });
+    })
+    
+})
 
 app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
