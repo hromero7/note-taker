@@ -14,8 +14,10 @@ Create an application that can be used to write, save, and delete notes. This ap
 Screenshots of the completed application are below:
 
 **Main Page**
-![](./assets/home.png)
+![](./public/assets/homepage.png)
 
+**Notepad**
+![](./public/assets/note.png)
 
 ## Installation
 
